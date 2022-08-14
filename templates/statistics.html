@@ -1,0 +1,27 @@
+{% include "header.html" %}
+  <header class="masthead" style="background-image: url('https://cdn.searchenginejournal.com/wp-content/uploads/2022/01/stunning-data-visualizations-61f0036f691f0-sej.png')">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="page-heading">
+            <h1>Visual Statistics</h1>
+            <span class="subheading">Ongoing Data Visualisation Experiments</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+    <h2 style="text-align: center"> Blog Contributors Bar Chart</h2>
+    <div id="bar"></div>
+    <h2 style="text-align: center"> Scatter Plot according to Plotly DataSet</h2>
+    <div id="scatter"></div>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script type="text/javascript">
+    var chart = {{graphJSON | safe}};
+    var scatter = {{scatterJSON | safe}};
+    var config = {responsive: true};
+    Plotly.newPlot("bar", chart, {}, config);
+    Plotly.newPlot("scatter", scatter, {}, config);
+</script>
+{% include "footer.html" %}
