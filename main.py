@@ -10,6 +10,10 @@ from flask_login import UserMixin, login_user, LoginManager, login_required, cur
 from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
 from flask_gravatar import Gravatar
 import os
+import pandas as pd
+import plotly
+import plotly.express as px
+import json
 
 
 app = Flask(__name__)
@@ -219,5 +223,41 @@ def delete_post(post_id):
     return redirect(url_for('get_all_posts'))
 
 
+# Create DataFrame from the current Database
+@app.route("/statistics")
+def visualise_data():
+    df = pd.read_sql_query("""SELECT *
+FROM blog_posts
+JOIN users
+ON users.id = blog_posts.author_id""", db.engine)
+    total_posts = df.groupby("name", as_index=False).count()
+    print(total_posts)
+    fig = px.bar(total_posts, x='name', y='title', title="Total Blog Posts")
+
+    gapminder = px.data.gapminder()
+    scatter = px.scatter(
+        gapminder,
+        x="gdpPercap",
+        y="lifeExp",
+        animation_frame="year",
+        animation_group="country",
+        size="pop",
+        color="continent",
+        hover_name="country",
+        facet_col="continent",
+        size_max=45,
+        range_y=[25, 90]
+    )
+
+    graph_json = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    scatter_json = json.dumps(scatter, cls=plotly.utils.PlotlyJSONEncoder)
+    return render_template('statistics.html', graphJSON=graph_json, scatterJSON=scatter_json)
+
+
 if __name__ == "__main__":
     app.run(debug=True)
+
+# Get column names PostgreSQL
+# SELECT column_name
+# FROM information_schema.columns
+# WHERE table_name = 'users'
